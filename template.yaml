@@ -1,0 +1,71 @@
+# lambda-auth/template.yaml
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+
+Parameters:
+  JwtSecret:
+    Type: String
+    NoEcho: true
+  AllowedOrigins:
+    Type: String
+    Default: "http://localhost:5173"
+  JwtIssuer:
+    Type: String
+    Default: "door-auth"
+  JwtExpirySeconds:
+    Type: Number
+    Default: 900
+
+Globals:
+  Function:
+    Runtime: python3.14
+    Architectures:
+      - x86_64
+    MemorySize: 256
+    Timeout: 30
+    Environment:
+      Variables:
+        LOG_LEVEL: INFO
+
+Resources:
+  AuthFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: "func-door-auth"
+      CodeUri: .
+      Handler: src.handler.lambda_handler
+      Environment:
+        Variables:
+          USERS_TABLE: "users"
+          USERS_GSI_USERNAME: username-index
+          JWT_SECRET: !Ref JwtSecret
+          JWT_ALGORITHM: HS256
+          JWT_ISSUER: !Ref JwtIssuer
+          JWT_EXPIRY_SECONDS: !Ref JwtExpirySeconds
+          ALLOWED_ORIGINS: !Ref AllowedOrigins
+      Policies:
+        - Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:Query
+                - dynamodb:PutItem
+                - dynamodb:GetItem
+              Resource:
+                - !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/users"
+                - !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/users/index/username-index"
+      FunctionUrlConfig:
+        AuthType: NONE
+        Cors:
+          AllowOrigins:
+            - !Ref AllowedOrigins
+          AllowMethods:
+            - POST
+          AllowHeaders:
+            - Content-Type
+            - Authorization
+          MaxAge: 86400
+
+Outputs:
+  AuthFunctionUrl:
+    Description: Lambda Function URL
+    Value: !GetAtt AuthFunctionUrl.FunctionUrl

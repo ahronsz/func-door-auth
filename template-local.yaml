@@ -1,0 +1,35 @@
+# template-local.yaml
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+
+Globals:
+  Function:
+    Runtime: python3.14
+    Architectures:
+      - x86_64
+    MemorySize: 256
+    Timeout: 10
+
+Resources:
+  AuthFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: "func-door-auth"
+      CodeUri: .
+      Handler: src.handler.lambda_handler
+      Events:
+        Register:
+          Type: Api
+          Properties:
+            Path: /auth/register
+            Method: post
+        Login:
+          Type: Api
+          Properties:
+            Path: /auth/login
+            Method: post
+        Options:
+          Type: Api
+          Properties:
+            Path: /{proxy+}
+            Method: options

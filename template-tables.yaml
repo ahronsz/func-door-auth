@@ -1,0 +1,65 @@
+# infrastructure/template-tables.yaml
+AWSTemplateFormatVersion: "2010-09-09"
+
+Description: >
+  Crea las tablas DynamoDB users y devices con sus índices.
+  Ejecutar UNA SOLA VEZ manualmente.
+
+Resources:
+  # ── Tabla users ────────────────────────────────────────────────────────
+  UsersTable:
+    Type: AWS::DynamoDB::Table
+    DeletionPolicy: Retain # nunca se borra aunque elimines el stack
+    UpdateReplacePolicy: Retain
+    Properties:
+      TableName: "users"
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: userId
+          AttributeType: S
+        - AttributeName: username
+          AttributeType: S
+      KeySchema:
+        - AttributeName: userId
+          KeyType: HASH
+      GlobalSecondaryIndexes:
+        - IndexName: username-index
+          KeySchema:
+            - AttributeName: username
+              KeyType: HASH
+          Projection:
+            ProjectionType: ALL
+      SSESpecification:
+        SSEEnabled: true
+
+  # ── Tabla devices ──────────────────────────────────────────────────────
+  DevicesTable:
+    Type: AWS::DynamoDB::Table
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      TableName: "devices"
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: deviceId
+          AttributeType: S
+        - AttributeName: userId
+          AttributeType: S
+      KeySchema:
+        - AttributeName: deviceId
+          KeyType: HASH
+      GlobalSecondaryIndexes:
+        - IndexName: userId-index
+          KeySchema:
+            - AttributeName: userId
+              KeyType: HASH
+          Projection:
+            ProjectionType: ALL
+      SSESpecification:
+        SSEEnabled: true
+
+Outputs:
+  UsersTableName:
+    Value: !Ref UsersTable
+  DevicesTableName:
+    Value: !Ref DevicesTable
