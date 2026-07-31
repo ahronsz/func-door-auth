@@ -40,9 +40,9 @@ class DynamoDBUserRepository:
 
         item = items[0]
         return User(
-            user_id=item["userId"],
+            user_id=item["user_id"],
             username=item["username"],
-            password_hash=item["passwordHash"],
+            password=item["password"],
             active=bool(item.get("active", False)),
         )
 
@@ -51,12 +51,12 @@ class DynamoDBUserRepository:
         try:
             self._table.put_item(
                 Item={
-                    "userId": user.user_id,
+                    "user_id": user.user_id,
                     "username": user.username,
-                    "passwordHash": user.password_hash,
+                    "password": user.password,
                     "active": user.active,
                 },
-                ConditionExpression="attribute_not_exists(userId)",
+                ConditionExpression="attribute_not_exists(user_id)",
             )
         except Exception:
             logger.exception("dynamodb_put_error", extra={"username": user.username})

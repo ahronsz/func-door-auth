@@ -133,7 +133,7 @@ class Router:
             return error("INTERNAL_ERROR", "Error interno", 500, request_id=rid)
 
         data = RegisterResponse(
-            userId=result.user_id,
+            user_id=result.user_id,
             username=result.username,
         ).model_dump(by_alias=True)
         return success(data, 201, rid)

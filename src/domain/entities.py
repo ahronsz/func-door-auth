@@ -8,5 +8,5 @@ from dataclasses import dataclass
 class User:
     user_id: str          # UUID
     username: str
-    password_hash: str    # Argon2id hash — nunca exponer
+    password: str    # Argon2id hash — nunca exponer
     active: bool

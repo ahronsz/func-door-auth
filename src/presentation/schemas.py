@@ -42,7 +42,7 @@ class RegisterRequest(BaseModel):
 
 
 class RegisterResponse(BaseModel):
-    user_id: str = Field(alias="userId")
+    user_id: str = Field(alias="user_id")
     username: str
 
     model_config = {"populate_by_name": True}

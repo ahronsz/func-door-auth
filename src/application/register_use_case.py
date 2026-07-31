@@ -45,7 +45,7 @@ class RegisterUseCase:
         user = User(
             user_id=str(uuid.uuid4()),
             username=username,
-            password_hash=password_hash,
+            password=password_hash,
             active=True,
         )
 

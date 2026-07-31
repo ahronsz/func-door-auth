@@ -66,7 +66,7 @@ class LoginUseCase:
             )
             raise UserNotFoundError()
 
-        if not self._password_verifier.verify(user.password_hash, password):
+        if not self._password_verifier.verify(user.password, password):
             raise InvalidCredentialsError()
 
         if not user.active:

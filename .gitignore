@@ -18,3 +18,4 @@ samconfig.toml
 *.key
 env.json
 events/
+debug.log
