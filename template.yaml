@@ -2,20 +2,6 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Transform: AWS::Serverless-2016-10-31
 
-Parameters:
-  JwtSecret:
-    Type: String
-    NoEcho: true
-  AllowedOrigins:
-    Type: String
-    Default: "http://localhost:5173"
-  JwtIssuer:
-    Type: String
-    Default: "door-auth"
-  JwtExpirySeconds:
-    Type: Number
-    Default: 900
-
 Globals:
   Function:
     Runtime: python3.14
@@ -27,11 +13,23 @@ Globals:
       Variables:
         LOG_LEVEL: INFO
 
+Parameters:
+  JwtSecret:
+    Type: String
+    NoEcho: true
+  AllowedOrigins:
+    Type: String
+  JwtIssuer:
+    Type: String
+  JwtExpirySeconds:
+    Type: Number
+    Default: 900
+
 Resources:
   AuthFunction:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: "func-door-auth"
+      FunctionName: "func-lock-auth"
       CodeUri: .
       Handler: src.handler.lambda_handler
       Environment:

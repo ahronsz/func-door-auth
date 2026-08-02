@@ -29,8 +29,6 @@ Resources:
               KeyType: HASH
           Projection:
             ProjectionType: ALL
-      SSESpecification:
-        SSEEnabled: true
 
   # ── Tabla devices ──────────────────────────────────────────────────────
   DevicesTable:
@@ -40,26 +38,49 @@ Resources:
     Properties:
       TableName: "devices"
       BillingMode: PAY_PER_REQUEST
+
       AttributeDefinitions:
         - AttributeName: device_id
           AttributeType: S
-        - AttributeName: user_id
-          AttributeType: S
+
       KeySchema:
         - AttributeName: device_id
           KeyType: HASH
+
+  UserDevicesTable:
+    Type: AWS::DynamoDB::Table
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      TableName: "user_devices"
+      BillingMode: PAY_PER_REQUEST
+
+      AttributeDefinitions:
+        - AttributeName: user_id
+          AttributeType: S
+        - AttributeName: device_id
+          AttributeType: S
+
+      KeySchema:
+        - AttributeName: user_id
+          KeyType: HASH
+        - AttributeName: device_id
+          KeyType: RANGE
+
       GlobalSecondaryIndexes:
-        - IndexName: user_id-index
+        - IndexName: device_id-index
           KeySchema:
-            - AttributeName: user_id
+            - AttributeName: device_id
               KeyType: HASH
+            - AttributeName: user_id
+              KeyType: RANGE
           Projection:
             ProjectionType: ALL
-      SSESpecification:
-        SSEEnabled: true
 
 Outputs:
   UsersTableName:
     Value: !Ref UsersTable
   DevicesTableName:
     Value: !Ref DevicesTable
+  UserDevicesTableName:
+    Value: !Ref UserDevicesTable
